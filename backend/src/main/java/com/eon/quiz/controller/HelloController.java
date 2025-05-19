@@ -11,6 +11,7 @@ public class HelloController {
 
     @GetMapping("/api/hello")
     public ResponseEntity<Map<String, String>> hello() {
+        //Dummy command for deployment-testing
         return ResponseEntity.ok(Map.of("message", "Hello from Spring Boot"));
     }
 }
