@@ -1,25 +1,34 @@
-// frontend/src/components/Layout.jsx
-import React from 'react';
-import { Box, AppBar, Toolbar, Typography, Container } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-const Layout = ({ children }) => (
-  <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div">
-          QuizMaster
-        </Typography>
-      </Toolbar>
-    </AppBar>
+const Layout = ({ children }) => {
+  const { currentUser, logout } = useAuth();
 
-    <Container component="main" sx={{ mt: 4, mb: 4, flex: 1 }}>
-      {children}
-    </Container>
+  return (
+    <Box>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Quiz Platform
+          </Typography>
+          <Button color="inherit" component={Link} to="/">Home</Button>
+          {!currentUser ? (
+            <>
+              <Button color="inherit" component={Link} to="/login">Login</Button>
+              <Button color="inherit" component={Link} to="/register">Register</Button>
+            </>
+          ) : (
+            <Button color="inherit" onClick={logout}>Logout ({currentUser.email})</Button>
+          )}
+        </Toolbar>
+      </AppBar>
 
-    <Box component="footer" sx={{ py: 2, textAlign: 'center', bgcolor: 'background.paper' }}>
-      © {new Date().getFullYear()} QuizMaster Inc.
+      <Box component="main" sx={{ p: 3 }}>
+        {children}
+      </Box>
     </Box>
-  </Box>
-);
+  );
+};
 
 export default Layout;
