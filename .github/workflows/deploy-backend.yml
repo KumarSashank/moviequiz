@@ -9,35 +9,25 @@ on:
       - main
 
 env:
-  # derive service suffix and image tag from branch
-  SERVICE_SUFFIX: ${{ github.ref_name == 'develop' && 'dev' || github.ref_name == 'staging' && 'staging' || github.ref_name == 'preprod' && 'preprod' || 'prod' }}
-  IMAGE_TAG:     ${{ github.ref_name == 'main' && 'latest' || github.ref_name }}
+  # Map git branch → image tag suffix exactly as your CI does
+  IMAGE_TAG: ${{ github.ref_name == 'develop' && 'dev' ||
+    github.ref_name == 'staging' && 'staging' ||
+    github.ref_name == 'preprod' && 'preprod' ||
+    github.ref_name == 'main' && 'latest' }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Check out your code
-      - uses: actions/checkout@v3
+      # … authenticate to GCP as before …
 
-      # 2. Authenticate to GCP
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      # 3. Configure project & region
-      - name: Configure gcloud
-        run: |
-          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud config set run/region  ${{ secrets.GCP_REGION }}
-
-      # 4. Deploy to Cloud Run
       - name: Deploy to Cloud Run
         run: |
-          SERVICE_NAME="quiz-backend-${{ env.SERVICE_SUFFIX }}"
-          echo "Deploying image eonnverse/quiz-backend:${{ env.IMAGE_TAG }} to service $SERVICE_NAME"
+          SERVICE_NAME="quiz-backend-${{ github.ref_name == 'develop' && 'dev' || \
+                         github.ref_name == 'staging' && 'staging' || \
+                         github.ref_name == 'preprod' && 'preprod' || \
+                         'prod' }}"
+          echo "Deploying image eonnverse/quiz-backend:${{ env.IMAGE_TAG }} to $SERVICE_NAME"
           gcloud run deploy $SERVICE_NAME \
             --image="docker.io/eonnverse/quiz-backend:${{ env.IMAGE_TAG }}" \
             --platform=managed \
