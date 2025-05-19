@@ -44,5 +44,6 @@ jobs:
           file: backend/Dockerfile
           push: true
           tags: |
-            subhash24/quiz-backend:${{ github.ref_name == 'develop' && 'dev' || github.ref_name == 'staging' && 'staging' || github.ref_name == 'preprod' && 'preprod' || github.ref_name == 'main' && 'latest' }}
-            subhash24/quiz-backend:latest
+            eonnverse/quiz-backend:${{ github.ref_name == 'develop' && 'dev' || github.ref_name == 'staging' && 'staging' || github.ref_name == 'preprod' && 'preprod' || github.ref_name == 'main' && 'latest' }}
+            eonnverse/quiz-backend:latest
+
